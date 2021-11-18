@@ -87,18 +87,47 @@ app.get('/wells', async (req, res) => {
                 })
             }).catch(err => console.log(err))
 
-            console.log(wells)
+        // The maximum URL length limits the amounts of wells we can get at once
+        // Split the wells into groups of 300
 
-        let wellURL = 'https://basin.gdr.nrcan.gc.ca/wells/well_query_e.php?well=' + wells[0]
-        // wells.forEach(well => 
-        //     wellURL += 'well=' + well + '&')
-        //     console.log(wellURL)
+        const wellGroups = []
+        const maxWellsPerGroup = 300
+
+        let wellIndex = 0
+        let groupIndex = 1
+
+        while (wellIndex < wells.length) {
+            if (groupIndex > wellGroups.length) {
+                wellGroups.push([]) // adds a new list to well groups
+            }
+
+            const currentGroup = wellGroups[wellGroups.length - 1] // gets last well group
+            currentGroup.push(wells[wellIndex])
+
+            if (currentGroup.length === maxWellsPerGroup) {
+                groupIndex ++
+            }
+
+            wellIndex++
+        }
+
+        const pages = []
             
-            // console.log(wellURL)
-        await axios.get(wellURL)
-            .then(response => {
-                res.json(response.data)
+
+        for (const wellGroup of wellGroups) {
+            console.log(wellGroup)
+            let wellURL = 'https://basin.gdr.nrcan.gc.ca/wells/well_query_e.php?'
+            wellGroup.forEach(well => {
+                wellURL += 'wellid_select[]=' + well + '&'
             })
+            
+            await axios.get(wellURL)
+            .then(response => {
+                pages.push(response.data)
+            })
+        }
+        
+        res.json({pages})
 
     } catch (err) {
         console.log(err)

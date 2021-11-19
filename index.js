@@ -43,6 +43,7 @@ axios.get('https://basin.gdr.nrcan.gc.ca/wells/index_e.php')
             const area = $(this).text();
             areas.push(area.split(' ').join('%20')) // Changes spaces to URL space characters
         })
+        console.log("DATA LOADING COMPLETED")
     }).catch(err => console.log(err))
 
 app.get('/info', (req, res) => {
@@ -77,13 +78,14 @@ app.get('/wells', async (req, res) => {
                 // res.json(data.split(";"))
                 data.split(";").forEach(d => {
                     try {
+                        // console.log(d)
                         const trimStart = d.split("myNewOption(")[1]
                         const trimEnd = trimStart.split(",")[0]
                         const removeBackslash = trimEnd.split('\\').join('')
                         const removeDblQuotes = removeBackslash.split('"').join('')
 
                         wells.push(removeDblQuotes)
-                    } catch (err) {console.log(err)}
+                    } catch (err) {return;}
                 })
             }).catch(err => console.log(err))
 
@@ -112,22 +114,41 @@ app.get('/wells', async (req, res) => {
         }
 
         const pages = []
-            
-
-        for (const wellGroup of wellGroups) {
-            console.log(wellGroup)
+        const startTime = Date.now()
+        console.log("Generating well groups")
+        // for (const wellGroup of wellGroups) {
+            // console.log(wellGroup)
             let wellURL = 'https://basin.gdr.nrcan.gc.ca/wells/well_query_e.php?'
-            wellGroup.forEach(well => {
-                wellURL += 'wellid_select[]=' + well + '&'
-            })
+            // wellGroup.forEach(well => {
+                wellURL += 'wellid_select[]=' + wellGroups[0][0] + '&'
+            // })
             
             await axios.get(wellURL)
             .then(response => {
                 pages.push(response.data)
             })
-        }
-        
-        res.json({pages})
+        // }
+        const endTime = Date.now()
+        console.log(`Done generating groups in ${(endTime - startTime)/1000}s`)
+
+        const dataRows = []
+
+        console.log("Extracting data from pages")
+
+        pages.forEach(page => {
+            const $ = cheerio.load(page);
+            const test = $('.querytableborder tbody tr', page)
+                .each(function() {
+                    let row = $(this).first().text()
+                    row = row.split('\t').join()
+                    row = row.split('\n\n').join('^')
+                    row = row.split(',').join('')
+                dataRows.push({row});
+            })
+        })
+        const rowEndTime = Date.now()
+        console.log(`Done extracting data from pages in ${(rowEndTime - endTime)/1000}s`)
+        res.json({dataRows})
 
     } catch (err) {
         console.log(err)

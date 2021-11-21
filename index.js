@@ -116,18 +116,18 @@ app.get('/wells', async (req, res) => {
         const pages = []
         const startTime = Date.now()
         console.log("Generating well groups")
-        // for (const wellGroup of wellGroups) {
+        for (const wellGroup of wellGroups) {
             // console.log(wellGroup)
             let wellURL = 'https://basin.gdr.nrcan.gc.ca/wells/well_query_e.php?'
-            // wellGroup.forEach(well => {
-                wellURL += 'wellid_select[]=' + wellGroups[0][0] + '&'
-            // })
+            wellGroup.forEach(well => {
+                wellURL += 'wellid_select[]=' + well + '&'
+            })
             
             await axios.get(wellURL)
             .then(response => {
                 pages.push(response.data)
             })
-        // }
+        }
         const endTime = Date.now()
         console.log(`Done generating groups in ${(endTime - startTime)/1000}s`)
 
@@ -145,7 +145,7 @@ app.get('/wells', async (req, res) => {
                     row = row.split(',').join('')
                     let columns = row.split("^")
                     columns = columns.map(col => col.trim())
-                    dataRows.push({columns});
+                    dataRows.push(columns);
             })
         })
         const rowEndTime = Date.now()

@@ -137,7 +137,7 @@ app.get('/wells', async (req, res) => {
 
         pages.forEach(page => {
             const $ = cheerio.load(page);
-            const test = $('.querytableborder tbody tr', page)
+            $('.querytableborder tbody tr', page)
                 .each(function() {
                     let row = $(this).first().text()
                     row = row.split('\t').join()

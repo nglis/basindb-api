@@ -143,7 +143,9 @@ app.get('/wells', async (req, res) => {
                     row = row.split('\t').join()
                     row = row.split('\n\n').join('^')
                     row = row.split(',').join('')
-                dataRows.push({row});
+                    let columns = row.split("^")
+                    columns = columns.map(col => col.trim())
+                    dataRows.push({columns});
             })
         })
         const rowEndTime = Date.now()

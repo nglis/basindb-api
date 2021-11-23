@@ -1,30 +1,25 @@
-const PORT = process.env.PORT || 8000
 
-var rootCas = require('ssl-root-cas').create();
- 
-rootCas
-    .addFile(__dirname + '../ssl/basin_cert.pem')
-    .addFile(__dirname + '../ssl/entrust_cert.pem')
-    .addFile(__dirname + '../ssl/entrust_root.pem');
+// Load config
+const config = require('./config/config')
 
-require('https').globalAgent.options.ca = rootCas;
-
+// Require libraries
 const axios = require('axios')
 const cheerio = require('cheerio')
 const express = require('express')
 
+// Loads certificates for BASIN DB
+const rootCas = require('ssl-root-cas').create();
+rootCas
+    .addFile(config.BASIN_CERT_LOC)
+    .addFile(config.ENTRUST_CERT_LOC)
+    .addFile(config.ENTRUST_ROOT_LOC);
+require('https').globalAgent.options.ca = rootCas;
+
+// Initialize Expres app
 const app = express()
 
 const date = new Date()
 const dateFormatted = date.toISOString()
-
-const basinBaseURL = 'https://basin.gdr.nrcan.gc.ca/wells/'
-const documentPaths = [
-    {
-        id: 'wells', 
-        path: 'index_e.php'
-    }
-]
 
 const areas = []
 
@@ -59,8 +54,6 @@ app.get('/info', (req, res) => {
 
 app.get('/wells', async (req, res) => {
     try {
-        const path = documentPaths.filter(document => document.id === 'wells')[0].path
-        // const URL = basinBaseURL + path
         let baseURL = 'https://basin.gdr.nrcan.gc.ca/wells/query.php?level=1&areas='
 
         // build the url using available areas
@@ -156,4 +149,4 @@ app.get('/wells', async (req, res) => {
 
 })
 
-app.listen(PORT, () => console.log('SERVER RUNNING ON PORT ', PORT))
+app.listen(config.PORT, () => console.log('SERVER RUNNING ON PORT ', config.PORT))

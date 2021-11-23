@@ -3,9 +3,9 @@ const PORT = process.env.PORT || 8000
 var rootCas = require('ssl-root-cas').create();
  
 rootCas
-    .addFile(__dirname + '/ssl/basin_cert.pem')
-    .addFile(__dirname + '/ssl/entrust_cert.pem')
-    .addFile(__dirname + '/ssl/entrust_root.pem');
+    .addFile(__dirname + '../ssl/basin_cert.pem')
+    .addFile(__dirname + '../ssl/entrust_cert.pem')
+    .addFile(__dirname + '../ssl/entrust_root.pem');
 
 require('https').globalAgent.options.ca = rootCas;
 

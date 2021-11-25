@@ -1,11 +1,16 @@
-
-// Load config
-const config = require('./config/config')
-
 // Require libraries
 const axios = require('axios')
 const cheerio = require('cheerio')
 const express = require('express')
+
+// Load config
+const config = require('./config/config')
+
+// Load services
+const services = require('./services/services')
+
+// Load endpoints
+const apiRoutes = require('./api-routes/api-routes')
 
 // Loads certificates for BASIN DB
 const rootCas = require('ssl-root-cas').create();
@@ -15,29 +20,31 @@ rootCas
     .addFile(config.ENTRUST_ROOT_LOC);
 require('https').globalAgent.options.ca = rootCas;
 
-// Initialize Expres app
+// Initialize Express app
 const app = express()
 
 const date = new Date()
 const dateFormatted = date.toISOString()
 
-const areas = []
+const areas = services.loadData()
 
 // This is a test API for scraping data directly off the BASIN database
 
-// Should adjust to do this daily
-axios.get('https://basin.gdr.nrcan.gc.ca/wells/index_e.php')
-    .then(response => {
-        const html = response.data
-        const $ = cheerio.load(html)
 
-        // Get all available areas
-        $('select[name=area] option', html).each(function() {
-            const area = $(this).text();
-            areas.push(area.split(' ').join('%20')) // Changes spaces to URL space characters
-        })
-        console.log("DATA LOADING COMPLETED")
-    }).catch(err => console.log(err))
+
+// Should adjust to do this daily
+// axios.get(config.BASIN_INDEX_URL)
+//     .then(response => {
+//         const html = response.data
+//         const $ = cheerio.load(html)
+
+//         // Get all available areas
+//         $('select[name=area] option', html).each(function() {
+//             const area = $(this).text();
+//             areas.push(area.split(' ').join('%20')) // Changes spaces to URL space characters
+//         })
+//         console.log("LOADED ALL AVAILABLE AREAS")
+//     }).catch(err => console.log(err))
 
 app.get('/info', (req, res) => {
     try {

@@ -9,9 +9,6 @@ const config = require('./config/config')
 // Load services
 const services = require('./services/services')
 
-// Load endpoints
-const apiRoutes = require('./api-routes/api-routes')
-
 // Loads certificates for BASIN DB
 const rootCas = require('ssl-root-cas').create();
 rootCas
@@ -26,30 +23,13 @@ const app = express()
 const date = new Date()
 const dateFormatted = date.toISOString()
 
-const dataRows = services.loadData();
+// IIFE loads data then passes is to the api endpoints
+let dataRows;
+(async function() {
+    dataRows = await services.loadData()
 
-// This is a test API for scraping data directly off the BASIN database
-app.get('/info', (req, res) => {
-    try {
-        res.json(
-            {
-                lastRelease: dateFormatted,
-                info: 'Thanks for using the BASIN DB API. Data retrieved using this API is up to date according to the BASIN DB website.'
-            }
-        )
-    } catch (err) {
-        console.log(err)
-    }
-})
-
-app.get('/wells', async (req, res) => {
-    try {
-        res.json({dataRows})
-
-    } catch (err) {
-        console.log(err)
-    }
-
-})
+    // Load api endpoints
+    require('./api-routes/api-routes')(app, dataRows)
+})()
 
 app.listen(config.PORT, () => console.log('SERVER RUNNING ON PORT ', config.PORT))

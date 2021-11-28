@@ -22,12 +22,15 @@ const date = new Date()
 const dateFormatted = date.toISOString()
 
 // IIFE loads data then passes is to the api endpoints
-let wellData;
+let data = {
+    lastUpdated: dateFormatted,
+    wellData: null
+};
 (async function() {
-    wellData = await services.loadData()
+    data.wellData = await services.loadWellData()
 
     // Load api endpoints
-    require('./api-routes/api-routes')(app, wellData)
+    require('./api-routes/api-routes')(app, data)
 })()
 
 app.listen(config.PORT, () => console.log('SERVER RUNNING ON PORT ', config.PORT))

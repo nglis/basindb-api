@@ -6,7 +6,7 @@ const cheerio = require('cheerio')
 const config = require('../config/config')
 
 // Populates wellData with data from website
-module.exports.loadData = async function () {
+module.exports.loadWellData = async function () {
     // Loads list of selectable areas
     const areas = await axios.get(config.BASIN_INDEX_URL)
         .then(response => {
@@ -51,6 +51,15 @@ module.exports.loadData = async function () {
     console.log(`DATA LOADING COMPLETED (${wells.length} wells)`)
 
     return wellData;
+}
+
+module.exports.getWellNames = function(wellData) {
+    const wellNames = wellData.map(wellObj => {
+        if (!wellObj) return null
+        return wellObj.NAME
+    })
+
+    return wellNames
 }
 
 function getAreasFromHTML(html) {
@@ -148,7 +157,8 @@ function createWellObject(columnData) {
         // Only return defined columns
         if (i > config.WELL_COLUMNS.length) break;
 
-        const columnName = config.WELL_COLUMNS[i]
+        // Need to take account index starting at 1 for well columns
+        const columnName = config.WELL_COLUMNS[i - 1]
         wellObject[columnName] = columnData[i]
     }
 

@@ -1,10 +1,13 @@
-module.exports = function(app, dataRows) {
+const services = require('../services/services')
+
+module.exports = function(app, data) {
+    // Returns json with details of last date updated
     app.get('/info', (req, res) => {
         try {
             res.json(
                 {
-                    lastRelease: '',
-                    info: 'Thanks for using the BASIN DB API. Data retrieved using this API is up to date according to the BASIN DB website.'
+                    lastUpdated: data.lastUpdated,
+                    info: 'Thank you for using the BASIN DB API.'
                 }
             )
         } catch (err) {
@@ -12,13 +15,22 @@ module.exports = function(app, dataRows) {
         }
     })
 
-    app.get('/wells', async (req, res) => {
+    // Returns all available well data
+    app.get('/all', async (req, res) => {
         try {
-            res.json({dataRows})
-
+            res.json(data.wellData)
         } catch (err) {
             console.log(err)
         }
+    })
 
+    // Returns list of well names
+    app.get('/wellnames', async (req, res) => {
+        try {
+            const wellNames = services.getWellNames(data.wellData)
+            res.json(wellNames)
+        } catch (err) {
+            console.log(err)
+        }
     })
 }

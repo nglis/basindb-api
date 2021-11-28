@@ -71,6 +71,54 @@ module.exports.getWellNames = function(wellData) {
     return wellNames
 }
 
+module.exports.getWellAreas = function(wellData) {
+    const wellAreas = new Map();
+    
+    wellData.forEach(well => {
+        if (!well || wellAreas.has(well.AREA)) return;
+        
+        wellAreas.set(well.AREA, true)
+    })
+
+    return Array.from(wellAreas.keys())
+}
+
+module.exports.getWellBasins = function(wellData) {
+    const wellBasins = new Map();
+    
+    wellData.forEach(well => {
+        if (!well || wellBasins.has(well.BASIN)) return;
+        
+        wellBasins.set(well.BASIN, true)
+    })
+
+    return Array.from(wellBasins.keys())
+}
+
+module.exports.getWellOperators = function(wellData) {
+    const wellOperators = new Map();
+    
+    wellData.forEach(well => {
+        if (!well || wellOperators.has(well.OPERATOR)) return;
+        
+        wellOperators.set(well.OPERATOR, true)
+    })
+
+    return Array.from(wellOperators.keys())
+}
+
+module.exports.getWellsByArea = function(area, wellData) {
+    const wells = wellData.filter(well => well.AREA.toLowerCase() === area.toLowerCase())
+
+    return wells
+}
+
+module.exports.getWellsByBasin = function(basin, wellData) {
+    const wells = wellData.filter(well => well.BASIN.toLowerCase() === basin.toLowerCase())
+
+    return wells
+}
+
 function getAreasFromHTML(html) {
     if (!html) return []
 

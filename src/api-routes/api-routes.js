@@ -15,8 +15,8 @@ module.exports = function(app, data) {
         }
     })
 
-    // Returns all available well data
-    app.get('/all', async (req, res) => {
+    // Returns basic data for all wells
+    app.get('/wells', async (req, res) => {
         try {
             res.json(data.wellData)
         } catch (err) {
@@ -34,6 +34,36 @@ module.exports = function(app, data) {
         }
     })
 
+    // Returns list of well areas
+    app.get('/areas', async (req, res) => {
+        try {
+            const wellAreas = services.getWellAreas(data.wellData)
+            res.json(wellAreas)
+        } catch (err) {
+            console.log(err)
+        }
+    })
+    
+    // Returns list of well basins
+    app.get('/basins', async (req, res) => {
+        try {
+            const wellBasins = services.getWellBasins(data.wellData)
+            res.json(wellBasins)
+        } catch (err) {
+            console.log(err)
+        }
+    })
+    
+    // Returns list of well operators
+    app.get('/operators', async (req, res) => {
+        try {
+            const wellOperators = services.getWellOperators(data.wellData)
+            res.json(wellOperators)
+        } catch (err) {
+            console.log(err)
+        }
+    })
+
     // Returns basic data for one well by GSC (shorthand well identifier)
     app.get('/well/:gsc', async (req, res) => {
         
@@ -42,9 +72,47 @@ module.exports = function(app, data) {
             const well = services.getWellByGSC(wellGSC, data.wellData)
 
             if (well) res.json(well)
-            res.status(404).send(
+            else res.status(404).send(
                 {
-                    error: "GSC not found (GSC's are not case sensitive). To find a list of GSC's and other basic well data, use the /all endpoint.",
+                    error: "GSC not found (GSC's are not case sensitive). To find a list of GSCs and other basic well data, use the /wells endpoint.",
+                    code: 404
+                }
+            )
+        } catch (err) {
+            console.log(err)
+        }
+    })
+
+    // Returns basic data for wells by area
+    app.get('/wells/area/:area', async (req, res) => {
+    
+        try {
+            const area = req.params.area;
+            const wells = services.getWellsByArea(area, data.wellData)
+
+            if (wells && wells.length > 0) res.json(wells)
+            else res.status(404).send(
+                {
+                    error: "Area not found. If area name has spaces, please replace them with %20. To find a list of areas or other basic well data, use the /areas or /wells endpoints.",
+                    code: 404
+                }
+            )
+        } catch (err) {
+            console.log(err)
+        }
+    })
+
+    // Returns basic data for wells by basin. Spaces in area are separated by %20
+    app.get('/wells/basin/:basin', async (req, res) => {
+    
+        try {
+            const basin = req.params.basin;
+            const wells = services.getWellsByBasin(basin, data.wellData)
+
+            if (wells && wells.length > 0) res.json(wells)
+            else res.status(404).send(
+                {
+                    error: "Basin not found. If basin name has spaces, please replace them with %20. To find a list of basins or other basic well data, use the /basins or /wells endpoints.",
                     code: 404
                 }
             )

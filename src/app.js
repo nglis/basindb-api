@@ -26,10 +26,11 @@ let data = {
     lastUpdated: dateFormatted,
     wellData: null
 };
+
 (async function() {
     data.wellData = await services.loadWellData()
 
-    // Load api endpoints
+    // Load api endpoints once well data is loaded
     require('./api-routes/api-routes')(app, data)
 })()
 

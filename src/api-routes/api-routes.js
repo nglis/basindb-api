@@ -93,7 +93,7 @@ module.exports = function(app, data) {
             if (wells && wells.length > 0) res.json(wells)
             else res.status(404).send(
                 {
-                    error: "Area not found. If area name has spaces, please replace them with %20. To find a list of areas or other basic well data, use the /areas or /wells endpoints.",
+                    error: "Area not found. If area name has spaces, try replacing them with %20. To find a list of areas or other basic well data, use the /areas or /wells endpoints.",
                     code: 404
                 }
             )
@@ -102,7 +102,7 @@ module.exports = function(app, data) {
         }
     })
 
-    // Returns basic data for wells by basin. Spaces in area are separated by %20
+    // Returns basic data for wells by basin
     app.get('/wells/basin/:basin', async (req, res) => {
     
         try {
@@ -112,7 +112,7 @@ module.exports = function(app, data) {
             if (wells && wells.length > 0) res.json(wells)
             else res.status(404).send(
                 {
-                    error: "Basin not found. If basin name has spaces, please replace them with %20. To find a list of basins or other basic well data, use the /basins or /wells endpoints.",
+                    error: "Basin not found. If basin name has spaces, try replacing them with %20. To find a list of basins or other basic well data, use the /basins or /wells endpoints.",
                     code: 404
                 }
             )

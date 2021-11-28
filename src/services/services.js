@@ -5,7 +5,7 @@ const cheerio = require('cheerio')
 // Load config
 const config = require('../config/config')
 
-// Populates dataRows with data from website
+// Populates wellData with data from website
 module.exports.loadData = async function () {
     // Loads list of selectable areas
     const areas = await axios.get(config.BASIN_INDEX_URL)
@@ -47,10 +47,10 @@ module.exports.loadData = async function () {
         })
     }
 
-    const rowData = getRowDataFromPages(pages);
+    const wellData = getWellDataFromPages(pages);
     console.log(`DATA LOADING COMPLETED (${wells.length} wells)`)
 
-    return rowData;
+    return wellData;
 }
 
 function getAreasFromHTML(html) {
@@ -105,23 +105,53 @@ function splitWellsIntoGroups(wells) {
     return wellGroups;
 }
 
-function getRowDataFromPages(pages) {
+function getWellDataFromPages(pages) {
     // Need to clean this up
-    const dataRows = []
+    let wellData = []
 
     pages.forEach(page => {
-        const $ = cheerio.load(page);
-        $('.querytableborder tbody tr', page)
-            .each(function() {
-                let row = $(this).first().text()
-                row = row.split('\t').join()
-                row = row.split('\n\n').join('^')
-                row = row.split(',').join('')
-                let columns = row.split("^")
-                columns = columns.map(col => col.trim())
-                dataRows.push(columns);
-        })
+        const wellDataForPage = getWellDataFromPage(page)
+        wellData = [...wellData, ...wellDataForPage]
     });
 
-    return dataRows;
+    return wellData;
 }
+
+function getWellDataFromPage(page) {
+    const wellData = []
+    const $ = cheerio.load(page)
+
+    $('.querytableborder tbody tr', page)
+        .each(function() {
+            let row = $(this).first().text()
+            row = row.split('\t').join()
+            row = row.split('\n\n').join('^')
+            row = row.split(',').join('')
+            let columns = row.split("^")
+            columns = columns.map(col => col.trim())
+
+            const wellObj = createWellObject(columns)
+            wellData.push(wellObj);
+    })
+
+    // Remove table header from data
+    wellData.shift()
+
+    return wellData
+}
+
+function createWellObject(columnData) {
+    const wellObject = {}
+
+    // Index starts at 1, first index is empty
+    for (let i = 1; i < columnData.length; i++) {
+        // Only return defined columns
+        if (i > config.WELL_COLUMNS.length) break;
+
+        const columnName = config.WELL_COLUMNS[i]
+        wellObject[columnName] = columnData[i]
+    }
+
+    return wellObject
+} 
+

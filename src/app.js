@@ -1,6 +1,4 @@
 // Require libraries
-const axios = require('axios')
-const cheerio = require('cheerio')
 const express = require('express')
 
 // Load config
@@ -24,12 +22,12 @@ const date = new Date()
 const dateFormatted = date.toISOString()
 
 // IIFE loads data then passes is to the api endpoints
-let dataRows;
+let wellData;
 (async function() {
-    dataRows = await services.loadData()
+    wellData = await services.loadData()
 
     // Load api endpoints
-    require('./api-routes/api-routes')(app, dataRows)
+    require('./api-routes/api-routes')(app, wellData)
 })()
 
 app.listen(config.PORT, () => console.log('SERVER RUNNING ON PORT ', config.PORT))

@@ -33,4 +33,23 @@ module.exports = function(app, data) {
             console.log(err)
         }
     })
+
+    // Returns basic data for one well by GSC (shorthand well identifier)
+    app.get('/well/:gsc', async (req, res) => {
+        
+        try {
+            const wellGSC = req.params.gsc;
+            const well = services.getWellByGSC(wellGSC, data.wellData)
+
+            if (well) res.json(well)
+            res.status(404).send(
+                {
+                    error: "GSC not found (GSC's are not case sensitive). To find a list of GSC's and other basic well data, use the /all endpoint.",
+                    code: 404
+                }
+            )
+        } catch (err) {
+            console.log(err)
+        }
+    })
 }

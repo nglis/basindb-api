@@ -53,6 +53,15 @@ module.exports.loadWellData = async function () {
     return wellData;
 }
 
+module.exports.getWellByGSC = function(wellGSC, wellData) {
+    for (const well of wellData) {
+        if (!well) continue
+        if (well.GSC.toLowerCase() === wellGSC.toLowerCase()) return well
+    }
+
+    return null
+}
+
 module.exports.getWellNames = function(wellData) {
     const wellNames = wellData.map(wellObj => {
         if (!wellObj) return null

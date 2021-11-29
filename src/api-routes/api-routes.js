@@ -73,6 +73,17 @@ module.exports = function(app, data) {
             console.log(err)
         }
     })
+    
+    // Returns list of well spud years
+    app.get('/spudyears', async (req, res) => {
+        try {
+            const wellSpudYears = services.getWellSpudYears(data.wellData)
+            res.json(wellSpudYears)
+        } catch (err) {
+            console.log(err)
+        }
+    })
+
 
     // Returns basic data for one well by GSC (shorthand well identifier)
     app.get('/well/:gsc', async (req, res) => {
@@ -130,8 +141,7 @@ module.exports = function(app, data) {
             console.log(err)
         }
     })
-
-    
+ 
     // Returns basic data for wells by status
     app.get('/wells/status/:status', async (req, res) => {
     
@@ -143,6 +153,25 @@ module.exports = function(app, data) {
             else res.status(404).send(
                 {
                     error: "Status not found. If status has spaces, try replacing them with %20. To find a list of basins or other basic well data, use the /statuses or /wells endpoints.",
+                    code: 404
+                }
+            )
+        } catch (err) {
+            console.log(err)
+        }
+    })
+ 
+    // Returns basic data for wells by spud year
+    app.get('/wells/spud/:year', async (req, res) => {
+    
+        try {
+            const spudYear = req.params.year;
+            const wells = services.getWellsBySpudYear(spudYear, data.wellData)
+
+            if (wells && wells.length > 0) res.json(wells)
+            else res.status(404).send(
+                {
+                    error: "Spud year not found. To find a list of spud years or other basic well data, use the /spudyears or /wells endpoints.",
                     code: 404
                 }
             )

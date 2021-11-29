@@ -95,6 +95,18 @@ module.exports.getWellBasins = function(wellData) {
     return Array.from(wellBasins.keys())
 }
 
+module.exports.getWellOperators = function(wellData) {
+    const wellOperators = new Map();
+    
+    wellData.forEach(well => {
+        if (!well || wellOperators.has(well.OPERATOR)) return;
+        
+        wellOperators.set(well.OPERATOR, true)
+    })
+
+    return Array.from(wellOperators.keys())
+}
+
 module.exports.getWellStatuses = function(wellData) {
     const wellStatuses = new Map();
     
@@ -107,16 +119,16 @@ module.exports.getWellStatuses = function(wellData) {
     return Array.from(wellStatuses.keys())
 }
 
-module.exports.getWellOperators = function(wellData) {
-    const wellOperators = new Map();
+module.exports.getWellSpudYears = function(wellData) {
+    const wellSpudYears = new Map();
     
     wellData.forEach(well => {
-        if (!well || wellOperators.has(well.OPERATOR)) return;
+        if (!well || wellSpudYears.has(well.SPUD_YEAR)) return;
         
-        wellOperators.set(well.OPERATOR, true)
+        wellSpudYears.set(well.SPUD_YEAR, true)
     })
 
-    return Array.from(wellOperators.keys())
+    return Array.from(wellSpudYears.keys())
 }
 
 module.exports.getWellsByArea = function(area, wellData) {
@@ -133,6 +145,12 @@ module.exports.getWellsByBasin = function(basin, wellData) {
 
 module.exports.getWellsByStatus = function(status, wellData) {
     const wells = wellData.filter(well => well.STATUS.toLowerCase() === status.toLowerCase())
+
+    return wells
+}
+
+module.exports.getWellsBySpudYear = function(spudYear, wellData) {
+    const wells = wellData.filter(well => well.SPUD_YEAR == spudYear)
 
     return wells
 }

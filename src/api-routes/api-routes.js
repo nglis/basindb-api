@@ -24,6 +24,16 @@ module.exports = function(app, data) {
         }
     })
 
+    
+    // Returns well count
+    app.get('/wellcount', async (req, res) => {
+        try {
+            res.json(data.wellData.length)
+        } catch (err) {
+            console.log(err)
+        }
+    })
+
     // Returns list of well names
     app.get('/wellnames', async (req, res) => {
         try {

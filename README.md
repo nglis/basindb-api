@@ -16,6 +16,8 @@ The current version of the API fetches basic well data including (but not limite
 Sample endpoints
 
 /wells - gets all available basic well data
+/wellcount - gets number of available wells
+
 /wellnames - gets list of available well names
 /areas - gets list of areas for available wells
 /basins - gets list of basins for available wells

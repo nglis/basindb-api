@@ -35,7 +35,7 @@ module.exports.loadWellData = async function () {
     const pages = []
     
     for (const groupIdx in wellGroups) {
-        let wellURL = 'https://basin.gdr.nrcan.gc.ca/wells/well_query_e.php?'
+        let wellURL = config.BASIN_WELL_QUERY_URL.slice()
         wellGroups[groupIdx].forEach(well => {
             wellURL += 'wellid_select[]=' + well + '&'
         })

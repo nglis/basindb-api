@@ -28,6 +28,7 @@ let data = {
 };
 
 (async function() {
+    // Handle all initial data loading in this service
     data.wellData = await services.loadWellData()
 
     // Load api endpoints once well data is loaded

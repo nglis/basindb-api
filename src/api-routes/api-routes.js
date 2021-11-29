@@ -63,6 +63,16 @@ module.exports = function(app, data) {
             console.log(err)
         }
     })
+    
+    // Returns list of well statuses
+    app.get('/statuses', async (req, res) => {
+        try {
+            const wellStatuses = services.getWellStatuses(data.wellData)
+            res.json(wellStatuses)
+        } catch (err) {
+            console.log(err)
+        }
+    })
 
     // Returns basic data for one well by GSC (shorthand well identifier)
     app.get('/well/:gsc', async (req, res) => {
@@ -113,6 +123,26 @@ module.exports = function(app, data) {
             else res.status(404).send(
                 {
                     error: "Basin not found. If basin name has spaces, try replacing them with %20. To find a list of basins or other basic well data, use the /basins or /wells endpoints.",
+                    code: 404
+                }
+            )
+        } catch (err) {
+            console.log(err)
+        }
+    })
+
+    
+    // Returns basic data for wells by status
+    app.get('/wells/status/:status', async (req, res) => {
+    
+        try {
+            const status = req.params.status;
+            const wells = services.getWellsByStatus(status, data.wellData)
+
+            if (wells && wells.length > 0) res.json(wells)
+            else res.status(404).send(
+                {
+                    error: "Status not found. If status has spaces, try replacing them with %20. To find a list of basins or other basic well data, use the /statuses or /wells endpoints.",
                     code: 404
                 }
             )

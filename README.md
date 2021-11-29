@@ -24,3 +24,4 @@ Sample endpoints
 
 /wells/area/[area] - gets all wells for specific area
 /wells/basin/[basin] - gets all wells for available basin
+/wells/status/[status] - get all wells by status
